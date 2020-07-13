@@ -6,6 +6,6 @@ texthero
 lxml
 pandas
 goose3
-
 urllib3
-
+flair
+torch

@@ -16,16 +16,7 @@ def get_webdata(url_list):
     webdata_df = pd.DataFrame()
 
     for url in url_list:
-        # Getting html and meta data from the URL
-        # response = requests.get(url)
-        # webpage = BeautifulSoup(response.text, 'html.parser')
-
-        # Extracting the metadata
-
-        # title = webpage.title.string
-        # date_published = articleDateExtractor.extractArticlePublishedDate(url).date()
-        # article_desc = \
-        #     [meta.attrs['content'] for meta in metas if 'name' in meta.attrs and meta.attrs['name'] == 'description'][0]
+        # Getting html and Extracting the Metadata
 
         g = Goose()
         article = g.extract(url=url)
@@ -36,20 +27,15 @@ def get_webdata(url_list):
         g.close()
 
     webdata_df['clean'] = (
-        webdata_df['text']
-            .pipe(hero.clean)
+        webdata_df['text'].pipe(hero.clean)
     )
 
     webdata_df['tfidf'] = (
-        webdata_df['text']
-            .pipe(hero.clean)
-            .pipe(hero.tfidf)
+        webdata_df['text'].pipe(hero.clean).pipe(hero.tfidf)
     )
 
     webdata_df['kmeans_labels'] = (
-        webdata_df['tfidf']
-            .pipe(hero.kmeans, n_clusters=5)
-            .astype(str)
+        webdata_df['tfidf'].pipe(hero.kmeans, n_clusters=5).astype(str)
     )
 
     # print(hero.top_words(webdata_df['clean']))

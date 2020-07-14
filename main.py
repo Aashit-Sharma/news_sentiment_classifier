@@ -2,6 +2,8 @@ import pandas as pd
 import texthero as hero
 from googlesearch import search
 from goose3 import Goose
+import BERT_Classfier
+import swifter
 
 
 def get_url(topic, site, num_urls=10):
@@ -10,6 +12,12 @@ def get_url(topic, site, num_urls=10):
         urls.append(url)
 
     return urls
+
+
+def score_article(articles):
+    sentiment = BERT_Classfier.predict_article_list(articles)
+
+    return sentiment
 
 
 def get_webdata(url_list):
@@ -26,23 +34,36 @@ def get_webdata(url_list):
 
         g.close()
 
-    webdata_df['clean'] = (
+    webdata_df['clean_text'] = (
         webdata_df['text'].pipe(hero.clean)
     )
 
-    webdata_df['tfidf'] = (
-        webdata_df['text'].pipe(hero.clean).pipe(hero.tfidf)
-    )
+    # TODO: String together topic and desc to use it for prediction.
+    # After that build a state of the art summarizer and
+    # compare the results of predictions on it with the one above
 
-    webdata_df['kmeans_labels'] = (
-        webdata_df['tfidf'].pipe(hero.kmeans, n_clusters=5).astype(str)
-    )
 
-    # print(hero.top_words(webdata_df['clean']))
+    sentiment = score_article(webdata_df['clean_text'].to_list())
+
+    # webdata_df['Predicted_sentiment'] = webdata_df['clean_text']\
+    #     .swifter.apply(BERT_Classfier.predict_article_list)
+
+    webdata_df['Predicted_sentiment'] = sentiment
+
+    # webdata_df['tfidf'] = (
+    #     webdata_df['text'].pipe(hero.clean).pipe(hero.tfidf)
+    # )
+    #
+    # webdata_df['kmeans_labels'] = (
+    #     webdata_df['tfidf'].pipe(hero.kmeans, n_clusters=5).astype(str)
+    # )
+
     return webdata_df
 
 
 if __name__ == '__main__':
-    urls = get_url("india", 'bbc.com', num_urls=10)
+    topic = "Trump"
+    site = 'bbc.com'
+    urls = get_url(topic=topic, site=site, num_urls=10)
 
-    get_webdata(urls).to_csv('data.csv')
+    get_webdata(urls).to_csv(f'results/{topic}_{site}.csv')

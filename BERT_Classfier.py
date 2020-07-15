@@ -58,25 +58,31 @@ def predict_article_list(articles: list):
 
     return predictions
 
-    # sent_list = [
-    #     'We urge the US to immediately withdraw its wrong decision, and stop any words and actions that interfere in China internal affairs and harm China interests spokeswoman Hua Chunying said.',
-    #     'Bad dog eats a gross treat and he dislikes it',
-    #     'good people refrain from eating dog food',
-    #     'bad dog eats a healthy treat before winning the race',
-    #     'beautifully ugly cars have windows in Romania'
-    #     ]
+def test_pred():
 
-    # for sent in sent_list:
-    #     # create example sentence
-    #     sentence = Sentence(sent)
-    #
-    #     # predict class and print
-    #     classifier.predict(sentence)
-    #
-    #     print(sentence.labels)
+    sent_list = [
+        'We urge the US to immediately withdraw its wrong decision, and stop any words and actions that interfere in China internal affairs and harm China interests spokeswoman Hua Chunying said.',
+        'Bad dog eats a gross treat and he dislikes it',
+        'good people refrain from eating dog food',
+        'bad dog eats a healthy treat before winning the race',
+        'beautifully ugly cars have windows in Romania'
+        ]
+    classifier = TextClassifier.load('resources/taggers/trec/final-model.pt')
+
+    for sent in sent_list:
+        # create example sentence
+        sentence = Sentence(sent)
+        classifier.predict(sentence)
+
+        # predict class and print
+        classifier.predict(sentence)
+
+        print(type(sentence.labels))
+        print(sentence.embedding)
+        print(list(sentence.labels))
 
 
 if __name__ == '__main__':
-    train()
-    predict()
-
+    # train()
+    # predict()
+    test_pred()
